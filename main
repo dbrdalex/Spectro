@@ -1,0 +1,59 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.signal import convolve2d
+from scipy.io import wavfile
+import time
+import random
+
+class Spectrogram:
+    def __init__(self, file):
+        self.file = file
+
+    def compute_spectrogram(self):
+        rate, data = wavfile.read(self.file)
+        spec = np.abs(np.fft.fft(data))
+        plt.figure(1)
+        plt.imshow(np.log(spec.T + 1e-9), origin='lower', aspect='auto')
+
+
+    def compute_blurred_spectrogram(self, blur_size=2):
+        rate, data = wavfile.read(self.file)
+        start3=time.time()
+        spec = np.abs(np.fft.fft(data))
+        end3=time.time()
+        kernel = np.ones((blur_size, blur_size)) / (blur_size ** 2)
+        start4 = time.time()
+        scaling_factor = 0.5
+        blurred_kernel = kernel * scaling_factor
+        end4 = time.time()
+        blurred_spec = convolve2d(np.log(spec.T + 1e-9), blurred_kernel, mode='same')
+        start5 = time.time()
+        plt.figure(2)
+        plt.imshow(blurred_spec, origin='lower', aspect='auto')
+        end5=time.time()
+        print("3:",end3-start3," 4:",start4-end3," 5:",end4-start4," 6:",start5-end4," 7:",end5-start5)
+
+class neurone:
+    def __init__(self):
+        a1 = random.randint(-100, 100)
+        a2 = random.randint(-100, 100)
+        a3 = random.randint(-100, 100)
+        b1 = random.randint(-100, 100)
+        b2 = random.randint(-100, 100)
+        b3 = random.randint(-100, 100)
+
+    def next(self, pixel):
+        print('')
+
+
+file = 'Astrix - Deep Jungle Walk.wav'
+spectrogram = Spectrogram(file)
+start = time.time()
+spectrogram.compute_spectrogram()
+end = time.time()
+start2 = time.time()
+spectrogram.compute_blurred_spectrogram()
+end2 = time.time()
+print('Taken1 : ',end-start)
+print('Taken2 : ',end2-start2)
+plt.show()
